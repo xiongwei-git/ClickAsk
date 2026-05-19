@@ -1,0 +1,15 @@
+{
+  "name": "clickask",
+  "private": true,
+  "version": "0.0.0",
+  "description": "ClickAsk bookmarklet — selecting page context and generating a structured AI prompt.",
+  "scripts": {
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "check": "node --check assets/clickask.js"
+  },
+  "devDependencies": {
+    "jsdom": "^24.0.0",
+    "vitest": "^1.6.0"
+  }
+}

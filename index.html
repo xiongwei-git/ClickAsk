@@ -1,0 +1,378 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ClickAsk</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%232B2118'/%3E%3Cpath d='M14.7 19.5c0-3.9 4.6-3.7 4.6-7.1 0-2.1-1.7-3.6-4.2-3.6-2.2 0-3.8 1-4.9 2.7l2.2 1.4c.7-1.1 1.5-1.6 2.6-1.6 1.1 0 1.8.6 1.8 1.5 0 2.1-4.7 2.2-4.7 6.6v.8h2.6v-.7z' fill='%23FFF8EF'/%3E%3Ccircle cx='13.4' cy='24.2' r='1.8' fill='%23FFF8EF'/%3E%3Ccircle cx='23.5' cy='23.5' r='3.2' fill='%23C96442'/%3E%3C/svg%3E">
+  <style>
+    :root {
+      --ca-bg: #f6f1e8;
+      --ca-bg-deep: #eee6da;
+      --ca-surface: #fbf7ef;
+      --ca-surface-raised: #fffdf8;
+      --ca-text: #2b2118;
+      --ca-text-muted: #665b50;
+      --ca-text-subtle: #8a7d6f;
+      --ca-accent: #c96442;
+      --ca-accent-strong: #b85f43;
+      --ca-border-strong: rgba(92, 70, 48, 0.16);
+      --ca-button: #2b2118;
+      --ca-button-hover: #3b2c20;
+      --ca-focus: rgba(184, 95, 67, 0.2);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--ca-text);
+      background:
+        radial-gradient(circle at 78% 12%, rgba(205, 114, 82, 0.12), transparent 28%),
+        linear-gradient(180deg, var(--ca-bg) 0%, var(--ca-bg-deep) 100%);
+      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+    main {
+      width: min(920px, calc(100% - 40px));
+      margin: 0 auto;
+      padding: 56px 0 64px;
+    }
+    .topline {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 28px;
+      color: var(--ca-text-subtle);
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 999px;
+      background: var(--ca-accent);
+    }
+    h1 {
+      margin: 0;
+      max-width: 720px;
+      font-size: clamp(40px, 7vw, 78px);
+      line-height: 0.98;
+      letter-spacing: 0;
+      color: var(--ca-text);
+      font-family: Georgia, "Times New Roman", serif;
+      font-weight: 500;
+    }
+    .sub {
+      max-width: 640px;
+      margin: 24px 0 0;
+      color: var(--ca-text-muted);
+      font-size: 18px;
+      line-height: 1.6;
+    }
+    .install {
+      margin-top: 40px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 16px;
+    }
+    .bookmarklet {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 48px;
+      padding: 0 22px;
+      border-radius: 8px;
+      background: var(--ca-button);
+      color: #fff8ef;
+      text-decoration: none;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: grab;
+      box-shadow: 0 10px 24px rgba(43, 33, 24, 0.16);
+      transition: background 150ms ease, transform 150ms ease, box-shadow 150ms ease;
+    }
+    .bookmarklet:hover {
+      background: var(--ca-button-hover);
+      box-shadow: 0 12px 28px rgba(43, 33, 24, 0.2);
+    }
+    .bookmarklet:focus-visible {
+      outline: 3px solid var(--ca-focus);
+      outline-offset: 3px;
+    }
+    .bookmarklet:active { cursor: grabbing; transform: translateY(1px); }
+    .bookmarklet.loading {
+      background: #d7ccbe;
+      color: #7a6c5c;
+      cursor: wait;
+      box-shadow: none;
+    }
+    .hint {
+      color: #74685c;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+    .safari-install {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 12px;
+      margin-top: 18px;
+    }
+    .secondary-btn {
+      min-height: 38px;
+      padding: 0 14px;
+      border: 1px solid #d8cbbb;
+      border-radius: 8px;
+      background: #fffaf2;
+      color: var(--ca-text);
+      font: inherit;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 150ms ease, border-color 150ms ease;
+    }
+    .secondary-btn:hover {
+      background: #fffdf8;
+      border-color: #c9b9a5;
+    }
+    .secondary-btn:focus-visible {
+      outline: 3px solid var(--ca-focus);
+      outline-offset: 3px;
+    }
+    .safari-note {
+      max-width: 620px;
+      color: #74685c;
+      font-size: 13px;
+      line-height: 1.55;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+      margin-top: 56px;
+    }
+    .card {
+      min-height: 150px;
+      padding: 20px;
+      border: 1px solid var(--ca-border-strong);
+      border-radius: 8px;
+      background: rgba(255, 251, 244, 0.68);
+      box-shadow: 0 12px 28px rgba(85, 69, 52, 0.06);
+    }
+    .card h2 {
+      margin: 0 0 10px;
+      font-size: 16px;
+      letter-spacing: 0;
+      color: #2f241b;
+    }
+    .card p {
+      margin: 0;
+      color: #6f6256;
+      font-size: 14px;
+      line-height: 1.55;
+    }
+    .error {
+      display: none;
+      margin-top: 16px;
+      color: #9f2d20;
+      font-size: 14px;
+    }
+    footer {
+      margin-top: 52px;
+      color: var(--ca-text-subtle);
+      font-size: 13px;
+    }
+    footer a { color: inherit; }
+    @media (max-width: 720px) {
+      main { width: min(100% - 28px, 920px); padding-top: 36px; }
+      .grid { grid-template-columns: 1fr; }
+      h1 { font-size: 44px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .bookmarklet { transition: none; }
+      .bookmarklet:active { transform: none; }
+    }
+  </style>
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      var lang = ((navigator.languages && navigator.languages[0]) || navigator.language || "en").toLowerCase();
+      var copy = lang.indexOf("zh") === 0 ? {
+        htmlLang: "zh-CN",
+        topline: "Bookmarklet alpha",
+        headline: "点一下，问得更准。",
+        sub: "ClickAsk 帮你选中页面局部，输入一句大白话，然后复制一段带页面上下文的结构化 prompt。",
+        hint: "把这个按钮拖到浏览器书签栏，然后在任意页面点击它。",
+        safariCopy: "复制 Safari 手动安装代码",
+        safariCopied: "已复制",
+        safariNote: "Safari 如果拖拽后只会跳回本页，请新建一个书签，把它的地址编辑为复制出来的代码。",
+        error: "加载 bookmarklet 资源失败。请用 HTTP 服务打开此目录后重试。",
+        gridLabel: "ClickAsk 工作方式",
+        pointTitle: "1. 指向",
+        pointBody: "点选或框选你想提问的页面区域。",
+        askTitle: "2. 提问",
+        askBody: "输入你平常会直接说出口的大白话问题。",
+        copyTitle: "3. 复制",
+        copyBody: "复制结构化 prompt，再粘贴到你常用的 AI 工具。",
+        cspTitle: "部分网站可能受限",
+        cspBody: "GitHub、Twitter、银行类页面的 CSP 会拦截样式 / 脚本注入。ClickAsk 会进入降级模式，功能可用但视觉会粗糙。建议在自家页面或本地开发中使用。",
+        footer: "Alpha 版本。"
+      } : {
+        htmlLang: "en",
+        topline: "Bookmarklet alpha",
+        headline: "Click anywhere. Ask better.",
+        sub: "ClickAsk lets you point at part of a page, write a plain-language question, and copy a structured prompt with the right page context.",
+        hint: "Drag this button to your bookmarks bar, then click it on any page.",
+        safariCopy: "Copy Safari install code",
+        safariCopied: "Copied",
+        safariNote: "If Safari opens this page instead of ClickAsk, create a bookmark manually and replace its address with the copied code.",
+        error: "Failed to load bookmarklet assets. Serve this folder over HTTP and try again.",
+        gridLabel: "How ClickAsk works",
+        pointTitle: "1. Point",
+        pointBody: "Select or drag across the part of the page you want to ask about.",
+        askTitle: "2. Ask",
+        askBody: "Type the rough question you would normally say out loud.",
+        copyTitle: "3. Copy",
+        copyBody: "Copy a structured prompt and paste it into your AI tool of choice.",
+        cspTitle: "Some sites limit ClickAsk",
+        cspBody: "Strict CSP pages (GitHub, Twitter, banks) can block inline styles or scripts. ClickAsk falls back to a basic look-and-feel; for full visuals use it on your own pages or local dev sites.",
+        footer: "Alpha build."
+      };
+      document.documentElement.lang = copy.htmlLang;
+      document.getElementById("topline-text").textContent = copy.topline;
+      document.getElementById("headline").textContent = copy.headline;
+      document.getElementById("subtitle").textContent = copy.sub;
+      document.getElementById("install-hint").textContent = copy.hint;
+      document.getElementById("safari-copy").textContent = copy.safariCopy;
+      document.getElementById("safari-note").textContent = copy.safariNote;
+      document.getElementById("load-error").textContent = copy.error;
+      document.getElementById("steps").setAttribute("aria-label", copy.gridLabel);
+      document.getElementById("point-title").textContent = copy.pointTitle;
+      document.getElementById("point-body").textContent = copy.pointBody;
+      document.getElementById("ask-title").textContent = copy.askTitle;
+      document.getElementById("ask-body").textContent = copy.askBody;
+      document.getElementById("copy-title").textContent = copy.copyTitle;
+      document.getElementById("copy-body").textContent = copy.copyBody;
+      document.getElementById("csp-title").textContent = copy.cspTitle;
+      document.getElementById("csp-body").textContent = copy.cspBody;
+      document.getElementById("footer-copy").textContent = copy.footer;
+
+      var base = location.href.replace(/[^/]*$/, "");
+      var link = document.getElementById("bookmarklet");
+      var bookmarkletCode = "";
+
+      // CR-006: cache-busting. Try manifest first, fall back silently when missing (local dev).
+      function loadManifest() {
+        return fetch(base + "assets/manifest.json", { cache: "no-store" })
+          .then(function (res) { return res.ok ? res.json() : null; })
+          .catch(function () { return null; });
+      }
+      function withVersion(url, hash) {
+        if (!hash) return url;
+        return url + "?v=" + encodeURIComponent(hash);
+      }
+
+      loadManifest().then(function (manifest) {
+        var cssUrl = withVersion(base + "assets/clickask.css", manifest && manifest.css);
+        var jsUrl = withVersion(base + "assets/clickask.js", manifest && manifest.js);
+        return Promise.all([
+          fetch(cssUrl).then(function (res) { return res.text(); }),
+          fetch(jsUrl).then(function (res) { return res.text(); })
+        ]);
+      }).then(function (parts) {
+        var css = parts[0];
+        var js = parts[1];
+        var cssInjector = "(function(){"
+          + "var s=document.createElement('style');"
+          + "s.setAttribute('data-clickask-style','');"
+          + "s.textContent=" + JSON.stringify(css) + ";"
+          + "document.head.appendChild(s);"
+          + "})();";
+        bookmarkletCode = "javascript:" + encodeURIComponent(cssInjector + js);
+        link.href = bookmarkletCode;
+        link.classList.remove("loading");
+      }).catch(function () {
+        document.getElementById("load-error").style.display = "block";
+        link.classList.remove("loading");
+      });
+
+      document.getElementById("safari-copy").addEventListener("click", function () {
+        if (!bookmarkletCode) return;
+        var done = function () {
+          var btn = document.getElementById("safari-copy");
+          var old = copy.safariCopy;
+          btn.textContent = copy.safariCopied;
+          setTimeout(function () { btn.textContent = old; }, 1400);
+        };
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(bookmarkletCode).then(done, function () {
+            fallbackCopy(bookmarkletCode);
+            done();
+          });
+        } else {
+          fallbackCopy(bookmarkletCode);
+          done();
+        }
+      });
+
+      function fallbackCopy(text) {
+        var ta = document.createElement("textarea");
+        ta.value = text;
+        ta.style.cssText = "position:fixed;left:0;top:0;opacity:0;pointer-events:none";
+        document.body.appendChild(ta);
+        ta.focus();
+        ta.select();
+        try { document.execCommand("copy"); } catch (_) {}
+        ta.remove();
+      }
+    });
+  </script>
+</head>
+<body>
+  <main>
+    <div class="topline"><span class="dot"></span><span id="topline-text">Bookmarklet alpha</span></div>
+    <h1 id="headline">Click anywhere. Ask better.</h1>
+    <p id="subtitle" class="sub">
+      ClickAsk lets you point at part of a page, write a plain-language question,
+      and copy a structured prompt with the right page context.
+    </p>
+
+    <div class="install">
+      <a id="bookmarklet" class="bookmarklet loading" href="#">ClickAsk</a>
+      <div id="install-hint" class="hint">Drag this button to your bookmarks bar, then click it on any page.</div>
+    </div>
+    <div class="safari-install">
+      <button id="safari-copy" class="secondary-btn" type="button">Copy Safari install code</button>
+      <div id="safari-note" class="safari-note">If Safari opens this page instead of ClickAsk, create a bookmark manually and replace its address with the copied code.</div>
+    </div>
+    <div id="load-error" class="error">Failed to load bookmarklet assets. Serve this folder over HTTP and try again.</div>
+
+    <section id="steps" class="grid" aria-label="How ClickAsk works">
+      <article class="card">
+        <h2 id="point-title">1. Point</h2>
+        <p id="point-body">Select or drag across the part of the page you want to ask about.</p>
+      </article>
+      <article class="card">
+        <h2 id="ask-title">2. Ask</h2>
+        <p id="ask-body">Type the rough question you would normally say out loud.</p>
+      </article>
+      <article class="card">
+        <h2 id="copy-title">3. Copy</h2>
+        <p id="copy-body">Copy a structured prompt and paste it into your AI tool of choice.</p>
+      </article>
+    </section>
+
+    <section class="grid" aria-label="Compatibility notes">
+      <article class="card">
+        <h2 id="csp-title">Some sites limit ClickAsk</h2>
+        <p id="csp-body">Strict CSP pages (GitHub, Twitter, banks) can block inline styles or scripts. ClickAsk falls back to a basic look-and-feel; for full visuals use it on your own pages or local dev sites.</p>
+      </article>
+    </section>
+
+    <footer>
+      <span id="footer-copy">Alpha build.</span>
+    </footer>
+  </main>
+</body>
+</html>

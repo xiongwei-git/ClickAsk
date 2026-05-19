@@ -1,0 +1,12 @@
+# Local/internal ideation and source analysis notes.
+初步设想.md
+docs/selector-technical-analysis.md
+
+# Common local clutter.
+.DS_Store
+node_modules/
+dist/
+build/
+
+# CR-007: vendored html2canvas (fetched at deploy time, not committed)
+assets/vendor/html2canvas.min.js
